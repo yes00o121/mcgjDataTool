@@ -12,10 +12,9 @@ public class StartMain {
 	
 	public static void main(String[] args) {
 //		new ConversationHanler().getHtml();
-		BaseHandler conversation = new ConversationHanler();
 		StartMain.conversationType = 1;
-		Object object = conversation.analysisData("http://tieba.baidu.com/f?ie=utf-8&kw=%E6%A1%90%E8%B0%B7%E7%BE%8E%E7%8E%B2&fr=search");
-//		Integer conversationId = conversation.addData(object);
+		//处理贴吧数据
+		new ConversationHanler().analysisData("http://tieba.baidu.com/f?kw=redis");
 		
 	}
 }

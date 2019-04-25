@@ -140,6 +140,15 @@ public class HttpClientUtil {
     }
     
     /**
+     * 上传文件,并且返回文件id
+     * @param url
+     * @return
+     */
+    public static String getFileId(String url){
+    	return HttpClientUtil.sendPost(ConstantUtil.ADDRESS + "/file/upLoadRemoteFile", "url=" + url);
+    }
+    
+    /**
      * 获取网站的host
      * @param url
      * @return

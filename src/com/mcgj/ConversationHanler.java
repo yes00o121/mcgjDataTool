@@ -6,7 +6,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import com.mcgj.entity.Conversation;
+import com.mcgj.util.ConstantUtil;
 import com.mcgj.util.HttpClientUtil;
 
 /**
@@ -14,10 +17,9 @@ import com.mcgj.util.HttpClientUtil;
  * @author 杨晨
  *
  */
-public class ConversationHanler implements BaseHandler{
-
-	@Override
-	public Object analysisData(String url) {
+public class ConversationHanler{
+	
+	public void analysisData(String url) {
 		try {
 			
 			Conversation conversation = new Conversation();
@@ -25,10 +27,20 @@ public class ConversationHanler implements BaseHandler{
 			Document document = connect.get();
 			//获取贴吧的头像
 			Element photoEl = document.select(".card_head_img").get(0);
-			conversation.setPhoto(photoEl.attr("src").contains("tb1.bdstatic.com") ? "" : photoEl.attr("src").replaceAll("&", "%26"));
+			String photoStr = photoEl.attr("src").contains("tb1.bdstatic.com") ? "" : photoEl.attr("src").replaceAll("&", "%26");
+			if(photoStr.split("src=").length > 1){
+				conversation.setPhoto(photoStr.split("src=")[1]);
+			}else{
+				conversation.setPhoto(photoStr);
+			}
 			//获取贴吧横幅
 			Element banner = document.select("#forum-card-banner").get(0);
-			conversation.setCardBanner(banner.attr("src").contains("tb1.bdstatic.com") ? "" : banner.attr("src").replaceAll("&", "%26"));
+			String bannerStr = banner.attr("src").contains("tb1.bdstatic.com") ? "" : banner.attr("src").replaceAll("&", "%26");
+			if(bannerStr.split("src=").length > 1){
+				conversation.setCardBanner(bannerStr.split("src=")[1]);
+			}else{
+				conversation.setCardBanner(bannerStr);
+			}
 			//获取贴吧签名
 			Element autograph = document.select(".card_slogan").get(0);
 			conversation.setAutograph(autograph.text());
@@ -38,49 +50,15 @@ public class ConversationHanler implements BaseHandler{
 			Element name = document.select(".card_title_fname").get(0);
 			String conversationName = name.text().substring(0, name.text().length()-1);
 			conversation.setConversationName(conversationName);
-			Integer conversationId = this.getConversationByName(conversationName);
-			if(conversationId > 0){
-				return conversationId;
-			}
-			System.out.println(conversation.getCardBanner());
-			System.out.println(conversation.getPhoto());
-			String result = HttpClientUtil.sendPost(address + "/spider/addConversation", "conversationName="+conversation.getConversationName() + "&conversationType=" + conversation.getConversationType() + "&background=" + conversation.getBackground() + "&cardBanner=" + conversation.getCardBanner() + "&autograph=" + conversation.getAutograph() + "&photo=" +conversation.getPhoto());
-			System.out.println(result);
-			//插入贴吧数据
-			/*
-			System.out.println(photoEl.attr("src"));
-			System.out.println(banner.attr("src"));
-			System.out.println(autograph.text());
-			System.out.println(StartMain.conversationType);
-			System.out.println(name.text().substring(0, name.text().length()-1));
-			*/
-			//获取当前页数下的所有贴子地址和标题
-			/*
-			Elements select = document.select(".j_th_tit  a[href]");
-			for(Element link:select){
-				System.out.println(link.attr("href"));
-				System.out.println(link.text());
-			}
-			*/
-			
+			String result = HttpClientUtil.sendPost(ConstantUtil.ADDRESS + "/spider/addConversation", "conversationName="+conversation.getConversationName() + "&conversationType=" + conversation.getConversationType() + "&background=" + conversation.getBackground() + "&cardBanner=" + conversation.getCardBanner() + "&autograph=" + conversation.getAutograph() + "&photo=" +conversation.getPhoto());
+			JSONObject json = JSONObject.parseObject(result);
+			JSONObject parse = json.getJSONObject("result");
+			//处理贴子数据
+			new ConversationChildHandler().analysisData(url,parse.getIntValue("id"));
+//			return parse.getInteger("id");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
 	}
 	
-	/**
-	 * 根据贴吧名称获取贴吧数据
-	 * @return
-	 */
-	private Integer getConversationByName(String name){
-		return 0;
-	}
-	
-	
-	@Override
-	public Integer addData(Object data) {
-		return null;
-	}
-
 }
