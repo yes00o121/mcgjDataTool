@@ -4,10 +4,8 @@ import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import com.mcgj.entity.Conversation;
 import com.mcgj.util.ConstantUtil;
 import com.mcgj.util.HttpClientUtil;
@@ -21,10 +19,9 @@ public class ConversationHanler{
 	
 	public void analysisData(String url) {
 		try {
-			
+			System.out.println("开始解析贴吧:" + url);
 			Conversation conversation = new Conversation();
-			Connection connect = Jsoup.connect(url);
-			Document document = connect.get();
+			Document document = Jsoup.connect(url).timeout(ConstantUtil.TIME_OUT).get();
 			//获取贴吧的头像
 			Element photoEl = document.select(".card_head_img").get(0);
 			String photoStr = photoEl.attr("src").contains("tb1.bdstatic.com") ? "" : photoEl.attr("src").replaceAll("&", "%26");

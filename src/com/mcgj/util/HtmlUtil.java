@@ -3,6 +3,8 @@ package com.mcgj.util;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.plaf.SliderUI;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,18 +38,16 @@ public class HtmlUtil {
 		try {
 			Set<String> set = new HashSet<>();
 			for(int i = 0;i<ConstantUtil.PAGE-1;i++){
-				Connection connect = Jsoup.connect(url + "&pn=" + i*ConstantUtil.PN);
-				Document document = connect.get();
+				//避免被百度发现爬虫,睡个0.05秒
+				Thread.sleep(50);
+				Document document = Jsoup.connect(url + "&pn=" + i*ConstantUtil.PN).timeout(ConstantUtil.TIME_OUT).get();
 //				获取当前页数下的所有贴子地址和标题
 				Elements select = document.select(".j_th_tit  a[href]");
 				for(Element link:select){
-//					System.out.println(link.attr("href"));
-					set.add(link.attr("href"));
-//					System.out.println(link.attr("href"));
-//					System.out.println(link.text());
+					set.add(ConstantUtil.URL + link.attr("href"));
 				}
 			}
-			System.out.println(set.size());
+			System.out.println(ConstantUtil.PAGE + "页,共找到"+set.size() + "个贴子");
 			return set;
 		} catch (Exception e) {
 			e.printStackTrace();
