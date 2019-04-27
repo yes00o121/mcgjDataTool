@@ -62,15 +62,15 @@ public class StartMain extends JFrame{
 		this.setVisible(true);
 	}
 	
-	public static Integer conversationType;//贴吧类型
+	public static Integer conversationType;//贴吧类型 
 	
 	public static void main(String[] args) {
-		new StartMain();
+//		new StartMain();
 //		new ConversationHanler().getHtml();
-//		StartMain.conversationType = 1;
+		StartMain.conversationType = 1;
 //		System.out.println("程序启动....");
 		//处理贴吧数据
-//		new ConversationHanler().analysisData("http://tieba.baidu.com/f?ie=utf-8&kw=杭州&fr=search");
+		new ConversationHanler().analysisData("http://tieba.baidu.com/f?ie=utf-8&kw=%E7%BE%8E%E9%A3%9F&fr=search");
 		
 	}
 }

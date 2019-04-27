@@ -54,6 +54,16 @@ public class HtmlUtil {
 		}
 		return null;
 	}
+	
+	/**
+	 * 特殊字符处理
+	 * @param str
+	 * @return
+	 */
+	private String charHandler(String str) {
+		return str.replaceAll("&","26%").replaceAll("%2F", "/");
+	}
+	
 	public static void main(String[] args) {
 		HtmlUtil.getHtmlRows("https://tieba.baidu.com/f?ie=utf-8&kw=%E5%8A%A8%E6%BC%AB&fr=search");
 	}

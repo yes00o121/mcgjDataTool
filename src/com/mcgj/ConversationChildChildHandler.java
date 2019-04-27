@@ -1,10 +1,12 @@
 package com.mcgj;
 
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -33,14 +35,20 @@ public class ConversationChildChildHandler {
 			Document document = Jsoup.connect(url).timeout(ConstantUtil.TIME_OUT).get();
 			//获取第一楼数据,该楼是楼主的数据
 			String title = document.select(".core_title_txt").get(0).text().trim().replaceAll("\n", "");//贴子标题
-			String name = document.select(".icon_relative img").attr("username");//楼主
-			String photo = document.select(".icon_relative img").attr("src").replaceAll("&", "26%");//头像
+//			String name = document.select(".icon_relative img").last().attr("username");//楼主
+			Element element = document.select("#j_p_postlist").select(".l_post_bright").get(0);//获取楼主数据
+			String name = element.select(".d_author").select(".d_name a").text();//层主名称
+			String photo = element.select(".d_author").select(".p_author_face img").attr("src").replaceAll("&", "26%");//层主头像
+//			String photo = document.select(".icon_relative img").attr("src").replaceAll("&", "26%");//头像
+			if(name == null || "".equals(photo)) {
+				System.out.println("..................");
+			}
 			//上传用户头像
 			String photoId = contentHandler(photo);
 			String content = document.select(".j_d_post_content").get(0).html();
 			Element imgs = document.select(".j_d_post_content").get(0);
 //			List<String> tempImages = new ArrayList<>();//临时存放已经变更的标签 
-			this.contentFilter(imgs,content);
+			content = this.contentFilter(imgs,content);
 //			if(imgs.childNodeSize() > 0){
 //				for(Node node:imgs.childNodes()){
 //					String tempSrc = node.attr("src");

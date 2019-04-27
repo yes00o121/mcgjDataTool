@@ -1,5 +1,7 @@
 package com.mcgj;
 
+import java.net.URLEncoder;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,19 +26,20 @@ public class ConversationHanler{
 			Document document = Jsoup.connect(url).timeout(ConstantUtil.TIME_OUT).get();
 			//获取贴吧的头像
 			Element photoEl = document.select(".card_head_img").get(0);
-			String photoStr = photoEl.attr("src").contains("tb1.bdstatic.com") ? "" : photoEl.attr("src").replaceAll("&", "%26");
+			String photoStr = photoEl.attr("src").contains("tb1.bdstatic.com") ? "" : photoEl.attr("src").replaceAll("amp;","").replaceAll("&", "26%");
 			if(photoStr.split("src=").length > 1){
 				conversation.setPhoto(photoStr.split("src=")[1]);
 			}else{
+			System.out.println(photoEl.attr("src"));
 				conversation.setPhoto(photoStr);
 			}
 			//获取贴吧横幅
 			Element banner = document.select("#forum-card-banner").get(0);
-			String bannerStr = banner.attr("src").contains("tb1.bdstatic.com") ? "" : banner.attr("src").replaceAll("&", "%26");
+			String bannerStr = banner.attr("src").contains("tb1.bdstatic.com") ? "" : banner.attr("src");
 			if(bannerStr.split("src=").length > 1){
-				conversation.setCardBanner(bannerStr.split("src=")[1]);
+				conversation.setCardBanner(bannerStr.split("src=")[1].replaceAll("&", "26%"));
 			}else{
-				conversation.setCardBanner(bannerStr);
+				conversation.setCardBanner(bannerStr.replaceAll("&", "26%"));
 			}
 			//获取贴吧签名
 			Element autograph = document.select(".card_slogan").get(0);
@@ -47,6 +50,8 @@ public class ConversationHanler{
 			Element name = document.select(".card_title_fname").get(0);
 			String conversationName = name.text().substring(0, name.text().length()-1);
 			conversation.setConversationName(conversationName);
+			System.out.println("conversationName="+conversation.getConversationName() + URLEncoder.encode("&conversationType=" + conversation.getConversationType() + "&background=" + conversation.getBackground() + "&cardBanner=" + conversation.getCardBanner() + "&autograph=" + conversation.getAutograph() + "&photo=" +conversation.getPhoto()));
+			
 			String result = HttpClientUtil.sendPost(ConstantUtil.ADDRESS + "/spider/addConversation", "conversationName="+conversation.getConversationName() + "&conversationType=" + conversation.getConversationType() + "&background=" + conversation.getBackground() + "&cardBanner=" + conversation.getCardBanner() + "&autograph=" + conversation.getAutograph() + "&photo=" +conversation.getPhoto());
 			JSONObject json = JSONObject.parseObject(result);
 			JSONObject parse = json.getJSONObject("result");

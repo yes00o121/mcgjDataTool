@@ -9,19 +9,19 @@ package com.mcgj.entity;
  */
 public class Conversation extends BaseEntity{
 	
-	private String conversationName;//贴吧名称
+	private String conversationName = "";//贴吧名称
 	
 	private Integer createUserId = 1;//创建用户id,贴吧默认都是管理员创建
 	
 	private Integer conversationType;//贴吧类型
 	
-	private String photo;//贴吧头像
+	private String photo = "";//贴吧头像
 	
-	private String background;//贴吧背景图片
+	private String background = "";//贴吧背景图片
 	
-	private String cardBanner;//贴吧横幅
+	private String cardBanner = "";//贴吧横幅
 	
-	private String autograph;//贴吧签名
+	private String autograph = "";//贴吧签名
 	
 	private Integer status = 1;//有效状态
 
